@@ -2,15 +2,30 @@
 
 class Minion_Task_Repo_Update_Forks extends Minion_Task {
 
+	/**
+	 * A set of config options that this task accepts
+	 * @var array
+	 */
+	protected $_config = array(
+		'submodules',
+	);
+
 	public function execute(array $config)
 	{
-		$modules = Kohana::config('minion-repo-forks');
-
-		foreach ($modules as $path => $options)
+		$submodules_config = Kohana::config('minion-repo-forks')->as_array();
+		$submodules = Arr::get($config, 'submodules');
+		if ($submodules)
 		{
+			$submodules = explode(',', $submodules);
+			$submodules_config = Arr::extract($submodules_config, $submodules);
+		}
+
+		foreach ($submodules_config as $name => $options)
+		{
+			$path = $options['path'];
 			$repo = new Git($path);
 
-			self::output('# '.$path);
+			self::output('# '.$name);
 
 			self::output('Adding remotes...');
 
