@@ -10,12 +10,12 @@ class Minion_Task_Repo_Update_Forks extends Minion_Task {
 		{
 			$repo = new Git($path);
 
-			CLI::output('# '.$path);
+			self::output('# '.$path);
 
-			CLI::output('Adding remotes...');
+			self::output('Adding remotes...');
 
-			CLI::output('git remote add minion-fetch '.$options['fetch_from']);
-			CLI::output('git remote add minion-push '.$options['push_to']);
+			self::output('git remote add minion-fetch '.$options['fetch_from']);
+			self::output('git remote add minion-push '.$options['push_to']);
 
 			// Make sure both minion remotes are created
 			try
@@ -41,24 +41,24 @@ class Minion_Task_Repo_Update_Forks extends Minion_Task {
 					if (substr($branch, 0, 21) === 'remotes/minion-fetch/')
 					{
 						$local = substr($branch, 21);
-						CLI::output('# Updating Branch "'.$local.'" ... ', FALSE);
+						self::output('# Updating Branch "'.$local.'" ... ', FALSE);
 
 						$repo->execute('checkout -b '.$local.' '.$branch);
 						$repo->execute('push minion-push '.$local);
 						$repo->execute('checkout '.$branch);
 						$repo->execute('branch -D '.$local);
 
-						CLI::output('Done.');
+						self::output('Done.');
 					}
 				}
 			}
 			catch (Exception $e)
 			{
-				CLI::error('');
-				CLI::error('######################');
-				CLI::error('# Problem Encountered:');
-				CLI::error($e->getMessage());
-				CLI::error('######################');
+				self::error('');
+				self::error('######################');
+				self::error('# Problem Encountered:');
+				self::error($e->getMessage());
+				self::error('######################');
 			}
 
 			// Always clean up our remotes!
@@ -68,7 +68,58 @@ class Minion_Task_Repo_Update_Forks extends Minion_Task {
 			// Update 'origin' now
 			$repo->execute('fetch origin');
 			$repo->execute('checkout '.$options['checkout']);
-			CLI::output('Switched to branch "'.$options['checkout'].'"');
+			self::output('Switched to branch "'.$options['checkout'].'"');
+		}
+	}
+
+	public static function input($message, $default = NULL)
+	{
+		$message = (is_string($default)) ? $message.' ['.$default.']: ' : $message.': ';
+		self::output($message, FALSE);
+		$value = trim(fgets(STDIN));
+
+		return ($default !== NULL AND empty($value))
+			? $default
+			: $value;
+	}
+
+	public static function output($messages, $eol = TRUE)
+	{
+		if (is_array($messages))
+		{
+			foreach ($messages as $message)
+			{
+				self::output($message);
+			}
+		}
+		else
+		{
+			fwrite(STDOUT, $messages);
+		}
+
+		if ($eol)
+		{
+			fwrite(STDOUT, PHP_EOL);
+		}
+	}
+
+	public static function error($messages, $eol = TRUE)
+	{
+		if (is_array($messages))
+		{
+			foreach ($messages as $message)
+			{
+				self::error($message);
+			}
+		}
+		else
+		{
+			fwrite(STDERR, $messages);
+		}
+
+		if ($eol)
+		{
+			fwrite(STDERR, PHP_EOL);
 		}
 	}
 }
