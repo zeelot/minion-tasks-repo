@@ -8,4 +8,4 @@
 
 ## Requirements & Installation
 
-This module requires the kohana-git module to be installed: https://github.com/Zeelot/kohana-git
+This module requires the `kohana-git` module to be installed: [https://github.com/Zeelot/kohana-git](https://github.com/Zeelot/kohana-git)
