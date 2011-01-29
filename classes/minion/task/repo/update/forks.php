@@ -54,11 +54,11 @@ class Minion_Task_Repo_Update_Forks extends Minion_Task {
 			}
 			catch (Exception $e)
 			{
-				CLI::output('');
-				CLI::output('######################');
-				CLI::output('# Problem Encountered:');
-				CLI::output($e->getMessage());
-				CLI::output('######################');
+				CLI::error('');
+				CLI::error('######################');
+				CLI::error('# Problem Encountered:');
+				CLI::error($e->getMessage());
+				CLI::error('######################');
 			}
 
 			// Always clean up our remotes!
