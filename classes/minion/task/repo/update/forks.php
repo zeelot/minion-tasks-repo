@@ -58,10 +58,10 @@ class Minion_Task_Repo_Update_Forks extends Minion_Task {
 						$local = substr($branch, 21);
 						self::output('# Updating Branch "'.$local.'" ... ', FALSE);
 
-						$repo->execute('checkout -b '.$local.' '.$branch);
-						$repo->execute('push minion-push '.$local);
+						$repo->execute('checkout -b minion/'.$local.' '.$branch);
+						$repo->execute('push minion-push minion/'.$local.':'.$local);
 						$repo->execute('checkout '.$branch);
-						$repo->execute('branch -D '.$local);
+						$repo->execute('branch -D minion/'.$local);
 
 						self::output('Done.');
 					}
