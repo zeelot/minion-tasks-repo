@@ -84,10 +84,18 @@ class Minion_Task_Repo_Submodules_Update extends Minion_Task {
 			$repo->execute('remote rm minion-fetch');
 			$repo->execute('remote rm minion-push');
 
-			// Update 'origin' now
-			$repo->execute('fetch origin');
-			$repo->execute('checkout '.$options['checkout']);
-			self::output('Switched to branch "'.$options['checkout'].'"');
+			try
+			{
+				// Update 'origin' now
+				$repo->execute('fetch origin');
+				$repo->execute('remote prune origin');
+				$repo->execute('checkout '.$options['checkout']);
+				self::output('Switched to branch "'.$options['checkout'].'"');
+			}
+			catch (Exception $e)
+			{
+				self::error('# Error: '.$e->getMessage());
+			}
 		}
 	}
 
