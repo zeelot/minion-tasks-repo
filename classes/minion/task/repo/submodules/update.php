@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Minion_Task_Repo_Update_Forks extends Minion_Task {
+class Minion_Task_Repo_Submodules_Update extends Minion_Task {
 
 	/**
 	 * A set of config options that this task accepts
@@ -8,6 +8,7 @@ class Minion_Task_Repo_Update_Forks extends Minion_Task {
 	 */
 	protected $_config = array(
 		'submodules',
+		'upstream',
 	);
 
 	public function execute(array $config)
@@ -45,25 +46,28 @@ class Minion_Task_Repo_Update_Forks extends Minion_Task {
 			}
 			catch (Exception $e) {} // Remote must already exist (ignore)
 
-			$repo->execute('fetch minion-fetch');
-
 			try
 			{
-				// We need to find the branches
-				$branches = array_map('trim', explode(PHP_EOL, trim($repo->execute('branch -a'))));
-				foreach ($branches as $branch)
+				if (array_key_exists('upstream', $config))
 				{
-					if (substr($branch, 0, 21) === 'remotes/minion-fetch/')
+					$repo->execute('fetch minion-fetch');
+
+					// We need to find the branches
+					$branches = array_map('trim', explode(PHP_EOL, trim($repo->execute('branch -a'))));
+					foreach ($branches as $branch)
 					{
-						$local = substr($branch, 21);
-						self::output('# Updating Branch "'.$local.'" ... ', FALSE);
+						if (substr($branch, 0, 21) === 'remotes/minion-fetch/')
+						{
+							$local = substr($branch, 21);
+							self::output('# Updating Branch "'.$local.'" ... ', FALSE);
 
-						$repo->execute('checkout -b minion/'.$local.' '.$branch);
-						$repo->execute('push minion-push minion/'.$local.':'.$local);
-						$repo->execute('checkout '.$branch);
-						$repo->execute('branch -D minion/'.$local);
+							$repo->execute('checkout -b minion/'.$local.' '.$branch);
+							$repo->execute('push minion-push minion/'.$local.':'.$local);
+							$repo->execute('checkout '.$branch);
+							$repo->execute('branch -D minion/'.$local);
 
-						self::output('Done.');
+							self::output('Done.');
+						}
 					}
 				}
 			}
