@@ -12,7 +12,7 @@ class Minion_Task_Repo_Update_Forks extends Minion_Task {
 
 	public function execute(array $config)
 	{
-		$submodules_config = Kohana::config('minion-repo-forks')->as_array();
+		$submodules_config = Kohana::config('minion-repo')->as_array();
 		$submodules = Arr::get($config, 'submodules');
 		if ($submodules)
 		{
