@@ -4,7 +4,7 @@
 
 - **Module Version:** 0.0.0
 - **Module URL:** <https://github.com/Zeelot/minion-tasks-repo>
-- **Compatible Kohana Version(s):** 3.0.x, 3.1.x
+- **Compatible Kohana Version(s):** 3.2.x
 
 ## Requirements & Installation
 
