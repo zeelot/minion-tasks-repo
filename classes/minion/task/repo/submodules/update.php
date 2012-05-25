@@ -54,20 +54,36 @@ class Minion_Task_Repo_Submodules_Update extends Minion_Task {
 
 					// We need to find the branches
 					$branches = array_map('trim', explode(PHP_EOL, trim($repo->execute('branch -a'))));
+					$local_branches = array(
+						'remotes' => array(),
+						'locals'  => array(),
+					);
+
 					foreach ($branches as $branch)
 					{
-						if (substr($branch, 0, 21) === 'remotes/minion-fetch/')
-						{
-							$local = substr($branch, 21);
-							self::output('# Updating Branch "'.$local.'" ... ', FALSE);
+						if (substr($branch, 0, 21) !== 'remotes/minion-fetch/')
+							continue;
 
-							$repo->execute('checkout -b minion/'.$local.' '.$branch);
-							$repo->execute('push minion-push minion/'.$local.':'.$local);
-							$repo->execute('checkout '.$branch);
-							$repo->execute('branch -D minion/'.$local);
+						$local = substr($branch, 21);
+						self::output('# Fetching Branch "'.$local.'" ... ', FALSE);
 
-							self::output('Done.');
-						}
+						// Make sure the branch are are using isn't here from previous runs
+						$this->_force_execute($repo, 'branch -D minion/'.$local);
+						$repo->execute('branch minion/'.$local.' '.$branch);
+
+						// Keep track of all the branches to push
+						$local_branches['remotes'][] = 'minion/'.$local.':'.$local;
+						$local_branches['locals'][] = 'minion/'.$local;
+
+						self::output('Done.');
+					}
+
+					if (count($local_branches))
+					{
+						self::output('Pushing new branches.');
+						// Push all the new local branches, then delete them
+						$repo->execute('push minion-push '.implode(' ', $local_branches['remotes']));
+						$repo->execute('branch -D '.implode(' ', $local_branches['locals']));
 					}
 				}
 			}
