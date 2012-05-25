@@ -115,6 +115,26 @@ class Minion_Task_Repo_Submodules_Update extends Minion_Task {
 		}
 	}
 
+	/**
+	 * Just a simple function to run a git command and ignore the exception.
+	 * This is useful when you want to make sure a branch or remote is deleted
+	 * before running other commands.
+	 *
+	 * @param  Object $repo    The Git object to run commands with
+	 * @param  String $command The command to run
+	 * @return Object          Self
+	 */
+	protected function _force_execute($repo, $command)
+	{
+		try
+		{
+			$repo->execute($command);
+		}
+		catch (Exception $e) {}
+
+		return $this;
+	}
+
 	public static function input($message, $default = NULL)
 	{
 		$message = (is_string($default)) ? $message.' ['.$default.']: ' : $message.': ';
