@@ -77,12 +77,11 @@ class Minion_Task_Repo_Submodules_Update extends Minion_Task {
 
 						self::output('Done.');
 					}
-
 					if (count($local_branches))
 					{
 						self::output('Pushing new branches.');
 						// Push all the new local branches, then delete them
-						$repo->execute('push minion-push '.implode(' ', $local_branches['remotes']));
+						$repo->execute('push minion-push --tags '.implode(' ', $local_branches['remotes']));
 						$repo->execute('branch -D '.implode(' ', $local_branches['locals']));
 					}
 				}
