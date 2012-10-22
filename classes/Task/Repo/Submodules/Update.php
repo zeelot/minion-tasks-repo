@@ -1,12 +1,12 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Minion_Task_Repo_Submodules_Update extends Minion_Task {
+class Task_Repo_Submodules_Update extends Minion_Task {
 
 	/**
 	 * A set of config options that this task accepts
 	 * @var array
 	 */
-	protected $_config = array(
+	protected $_options = array(
 		'submodules',
 		'upstream',
 	);
